@@ -35,9 +35,9 @@ void ofApp::setup()
         Particle p = Particle();
         p.position = ofVec2f(ofRandom(0, ofGetWidth()), ofRandom(0, ofGetHeight()));
         p.direction = ofRandom(TWO_PI);
-        p.color = ofVec3f(ofRandom(1), 0, ofRandom(1));
-//        ofColor c = ofColor::fromHsb(ofRandom(255), 255, 255);
-//        p.color = ofVec3f(c.r / 255.0, c.g / 255.0, c.b / 255.0);
+//        p.color = ofVec3f(ofRandom(1), 0, ofRandom(1));
+        ofColor c = ofColor::fromHsb(192 + ofRandom(64), 255, 255);
+        p.color = ofVec3f(c.r / 255.0, c.g / 255.0, c.b / 255.0);
         particles.push_back(p);
     }
     
@@ -145,6 +145,15 @@ void ofApp::draw()
     ofClear(0, 0, 0);
     ofFill();
     
+    for(int i = 0; i < GRID_SIZE; i++)
+    {
+        for(int j = 0; j < GRID_SIZE; j++)
+        {
+            ofSetColor(ofFloatColor(grid[i][j].x, grid[i][j].y, grid[i][j].z));
+            ofDrawRectangle(i * gridDiv, j * gridDiv, gridDiv, gridDiv);
+        }
+    }
+    
     if( showParticles || showSensors )
     {
         for(int i = 0; i < N_PARTICLES; i++)
@@ -153,25 +162,16 @@ void ofApp::draw()
             
             if( showParticles )
             {
-                ofSetColor(255, 0, 0);
+                ofSetColor(ofFloatColor(p.color.x, p.color.y, p.color.z));
                 ofDrawRectangle(p.position.x, p.position.y, 1, 1);
             }
             
             if( showSensors )
             {
-                ofSetColor(255, 255, 0);
+                ofSetColor(255, 255, 255);
                 ofDrawRectangle(p.sensor_l.x, p.sensor_l.y, 1, 1);
                 ofDrawRectangle(p.sensor_r.x, p.sensor_r.y, 1, 1);
             }
-        }
-    }
-    
-    for(int i = 0; i < GRID_SIZE; i++)
-    {
-        for(int j = 0; j < GRID_SIZE; j++)
-        {
-            ofSetColor(ofFloatColor(grid[i][j].x, grid[i][j].y, grid[i][j].z));
-            ofDrawRectangle(i * gridDiv, j * gridDiv, gridDiv, gridDiv);
         }
     }
 }
