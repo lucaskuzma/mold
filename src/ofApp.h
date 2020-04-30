@@ -9,6 +9,8 @@ class Particle
 {
 public:
     ofVec2f position;
+    ofVec2f sensor_l;
+    ofVec2f sensor_r;
     float direction;
 };
 

@@ -64,15 +64,15 @@ void ofApp::updateSim()
         // calculate sensor positions
         float r_sensor_x = SENSOR_DISTANCE * cos(p.direction + SENSOR_ANGLE);
         float r_sensor_y = SENSOR_DISTANCE * sin(p.direction + SENSOR_ANGLE);
-        ofVec2f r_sensor_position = p.position + ofVec2f(r_sensor_x, r_sensor_y);
+        p.sensor_r = p.position + ofVec2f(r_sensor_x, r_sensor_y);
         
         float l_sensor_x = SENSOR_DISTANCE * cos(p.direction - SENSOR_ANGLE);
         float l_sensor_y = SENSOR_DISTANCE * sin(p.direction - SENSOR_ANGLE);
-        ofVec2f l_sensor_position = p.position + ofVec2f(l_sensor_x, l_sensor_y);
+        p.sensor_l = p.position + ofVec2f(l_sensor_x, l_sensor_y);
         
         // get grid values at sensor position
-        float r_grid_value = grid[r_sensor_position.x * gridMult][r_sensor_position.y * gridMult];
-        float l_grid_value = grid[l_sensor_position.x * gridMult][l_sensor_position.y * gridMult];
+        float r_grid_value = grid[p.sensor_r.x * gridMult][p.sensor_r.y * gridMult];
+        float l_grid_value = grid[p.sensor_l.x * gridMult][p.sensor_l.y * gridMult];
         
         // rotate away from higher value
         if(l_grid_value < r_grid_value)
@@ -139,11 +139,16 @@ void ofApp::draw()
     ofClear(0, 0, 0);
     ofFill();
     
-    ofSetColor(255, 0, 0);
     for(int i = 0; i < N_PARTICLES; i++)
     {
         Particle p = particles[i];
-        ofDrawRectangle(p.position.x - 1, p.position.y - 1, 3, 3);
+        
+        ofSetColor(255, 0, 0);
+        ofDrawRectangle(p.position.x, p.position.y, 1, 1);
+        
+        ofSetColor(255, 255, 0);
+        ofDrawRectangle(p.sensor_l.x, p.sensor_l.y, 1, 1);
+        ofDrawRectangle(p.sensor_r.x, p.sensor_r.y, 1, 1);
     }
     
     for(int i = 0; i < GRID_SIZE; i++)
