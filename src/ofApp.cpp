@@ -3,7 +3,7 @@
 #define SIM_SPEED 1      // how many sim steps per frame
 #define SENSOR_DISTANCE 16
 #define SENSOR_ANGLE    .4 //0.785398
-#define STEP_DISTANCE   2
+#define STEP_DISTANCE   4
 #define STEP_ANGLE      0.20
 #define ATTENUATION     0.993
 
@@ -17,9 +17,9 @@ void ofApp::setup()
     showSensors = true;
     showParticles = true;
     
-    ofEnableDepthTest();
-    glEnable(GL_POINT_SMOOTH);
-    glPointSize(2);
+//    ofEnableDepthTest();
+//    glEnable(GL_POINT_SMOOTH);
+//    glPointSize(2);
     
     for(int i = 0; i < GRID_SIZE; i++)
     {
@@ -36,6 +36,8 @@ void ofApp::setup()
         p.position = ofVec2f(ofRandom(0, ofGetWidth()), ofRandom(0, ofGetHeight()));
         p.direction = ofRandom(TWO_PI);
         p.color = ofVec3f(ofRandom(1), 0, ofRandom(1));
+//        ofColor c = ofColor::fromHsb(ofRandom(255), 255, 255);
+//        p.color = ofVec3f(c.r / 255.0, c.g / 255.0, c.b / 255.0);
         particles.push_back(p);
     }
     
