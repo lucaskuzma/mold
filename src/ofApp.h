@@ -11,6 +11,7 @@ public:
     ofVec2f position;
     ofVec2f sensor_l;
     ofVec2f sensor_r;
+    ofVec3f color;
     float direction;
 };
 
@@ -18,8 +19,8 @@ class ofApp : public ofBaseApp{
     
     ofEasyCam cam;
     
-    array<array<float, GRID_SIZE>, GRID_SIZE> grid;
-    array<array<float, GRID_SIZE>, GRID_SIZE> temp;
+    array<array<ofVec3f, GRID_SIZE>, GRID_SIZE> grid;
+    array<array<ofVec3f, GRID_SIZE>, GRID_SIZE> temp;
     
     float gridMult;
     float gridDiv;

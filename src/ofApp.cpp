@@ -25,8 +25,8 @@ void ofApp::setup()
     {
         for(int j = 0; j < GRID_SIZE; j++)
         {
-            grid[i][j] = 0;
-            temp[i][j] = 0;
+            grid[i][j] = ofVec3f(0, 0, 0);
+            temp[i][j] = ofVec3f(0, 0, 0);
         }
     }
     
@@ -35,6 +35,7 @@ void ofApp::setup()
         Particle p = Particle();
         p.position = ofVec2f(ofRandom(0, ofGetWidth()), ofRandom(0, ofGetHeight()));
         p.direction = ofRandom(TWO_PI);
+        p.color = ofVec3f(ofRandom(1), 0, ofRandom(1));
         particles.push_back(p);
     }
     
@@ -73,11 +74,11 @@ void ofApp::updateSim()
         p.sensor_l = p.position + ofVec2f(l_sensor_x, l_sensor_y);
         
         // get grid values at sensor position
-        float r_grid_value = grid[p.sensor_r.x * gridMult][p.sensor_r.y * gridMult];
-        float l_grid_value = grid[p.sensor_l.x * gridMult][p.sensor_l.y * gridMult];
+        ofVec3f r_grid_value = grid[p.sensor_r.x * gridMult][p.sensor_r.y * gridMult];
+        ofVec3f l_grid_value = grid[p.sensor_l.x * gridMult][p.sensor_l.y * gridMult];
         
         // rotate away from higher value
-        if(l_grid_value < r_grid_value)
+        if(l_grid_value.lengthSquared() < r_grid_value.lengthSquared())
         {
             p.direction -= STEP_ANGLE;
         } else {
@@ -100,7 +101,7 @@ void ofApp::updateSim()
     for(int i = 0; i < N_PARTICLES; i++)
     {
         Particle p = particles[i];
-        grid[ofClamp(p.position.x * gridMult, 0, GRID_SIZE - 1)][ofClamp(p.position.y * gridMult, 0, GRID_SIZE - 1)] += 1;
+        grid[ofClamp(p.position.x * gridMult, 0, GRID_SIZE - 1)][ofClamp(p.position.y * gridMult, 0, GRID_SIZE - 1)] += p.color;
     }
     
     // blur grid
@@ -108,17 +109,18 @@ void ofApp::updateSim()
     {
         for(int j = 0; j < GRID_SIZE; j++)
         {
-            float tl = i == 0 || j == 0 ? 0 : grid[i - 1][j - 1];
-            float to = j == 0 ? 0 : grid[i][j - 1];
-            float tr = i == GRID_SIZE - 1 || j == 0 ? 0 : grid[i + 1][j - 1];
+            ofVec3f zero = ofVec3f(0, 0, 0);
+            ofVec3f tl = i == 0 || j == 0 ? zero : grid[i - 1][j - 1];
+            ofVec3f to = j == 0 ? zero : grid[i][j - 1];
+            ofVec3f tr = i == GRID_SIZE - 1 || j == 0 ? zero : grid[i + 1][j - 1];
             
-            float ri = i == GRID_SIZE - 1 ? 0 : grid[i + 1][j];
+            ofVec3f ri = i == GRID_SIZE - 1 ? zero : grid[i + 1][j];
             
-            float br = i == GRID_SIZE - 1 || j == GRID_SIZE - 1 ? 0 : grid[i + 1][j + 1];
-            float bo = j == GRID_SIZE - 1 ? 0 : grid[i][j + 1];
-            float bl = i == 0 || j == GRID_SIZE - 1 ? 0 : grid[i - 1][j + 1];
+            ofVec3f br = i == GRID_SIZE - 1 || j == GRID_SIZE - 1 ? zero : grid[i + 1][j + 1];
+            ofVec3f bo = j == GRID_SIZE - 1 ? zero : grid[i][j + 1];
+            ofVec3f bl = i == 0 || j == GRID_SIZE - 1 ? zero : grid[i - 1][j + 1];
             
-            float le = i == 0 ? 0 : grid[i-1][j];
+            ofVec3f le = i == 0 ? zero : grid[i-1][j];
             
             temp[i][j] = .125 * (tl + to + tr + ri + br + bo + bl + le);
         }
@@ -166,7 +168,7 @@ void ofApp::draw()
     {
         for(int j = 0; j < GRID_SIZE; j++)
         {
-            ofSetColor(ofFloatColor(grid[i][j]));
+            ofSetColor(ofFloatColor(grid[i][j].x, grid[i][j].y, grid[i][j].z));
             ofDrawRectangle(i * gridDiv, j * gridDiv, gridDiv, gridDiv);
         }
     }
