@@ -2,10 +2,10 @@
 
 #define SIM_SPEED 1      // how many sim steps per frame
 #define SENSOR_DISTANCE 16
-#define SENSOR_ANGLE    0.785398
-#define STEP_DISTANCE   1
-#define STEP_ANGLE      0.392
-#define ATTENUATION     0.99
+#define SENSOR_ANGLE    .4 //0.785398
+#define STEP_DISTANCE   2
+#define STEP_ANGLE      0.20
+#define ATTENUATION     0.993
 
 //--------------------------------------------------------------
 void ofApp::setup()
@@ -14,6 +14,8 @@ void ofApp::setup()
     ofBackground(0, 0, 0);
     
     runSim = true;
+    showSensors = true;
+    showParticles = true;
     
     ofEnableDepthTest();
     glEnable(GL_POINT_SMOOTH);
@@ -139,16 +141,25 @@ void ofApp::draw()
     ofClear(0, 0, 0);
     ofFill();
     
-    for(int i = 0; i < N_PARTICLES; i++)
+    if( showParticles || showSensors )
     {
-        Particle p = particles[i];
-        
-        ofSetColor(255, 0, 0);
-        ofDrawRectangle(p.position.x, p.position.y, 1, 1);
-        
-        ofSetColor(255, 255, 0);
-        ofDrawRectangle(p.sensor_l.x, p.sensor_l.y, 1, 1);
-        ofDrawRectangle(p.sensor_r.x, p.sensor_r.y, 1, 1);
+        for(int i = 0; i < N_PARTICLES; i++)
+        {
+            Particle p = particles[i];
+            
+            if( showParticles )
+            {
+                ofSetColor(255, 0, 0);
+                ofDrawRectangle(p.position.x, p.position.y, 1, 1);
+            }
+            
+            if( showSensors )
+            {
+                ofSetColor(255, 255, 0);
+                ofDrawRectangle(p.sensor_l.x, p.sensor_l.y, 1, 1);
+                ofDrawRectangle(p.sensor_r.x, p.sensor_r.y, 1, 1);
+            }
+        }
     }
     
     for(int i = 0; i < GRID_SIZE; i++)
@@ -162,8 +173,20 @@ void ofApp::draw()
 }
 
 //--------------------------------------------------------------
-void ofApp::keyPressed(int key){
-
+void ofApp::keyPressed(int key)
+{
+    if (key == ' ')
+    {
+        runSim = !runSim;
+    }
+    if (key == 's')
+    {
+        showSensors = !showSensors;
+    }
+    if (key == 'p')
+    {
+        showParticles = !showParticles;
+    }
 }
 
 //--------------------------------------------------------------

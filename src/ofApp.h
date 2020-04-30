@@ -2,7 +2,7 @@
 
 #include "ofMain.h"
 
-#define GRID_SIZE 256
+#define GRID_SIZE 320
 #define N_PARTICLES 256
 
 class Particle
@@ -27,6 +27,8 @@ class ofApp : public ofBaseApp{
     vector<Particle> particles;
     
     bool runSim;
+    bool showSensors;
+    bool showParticles;
     
 public:
     void setup();
