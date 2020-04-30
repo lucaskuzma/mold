@@ -35,8 +35,7 @@ void ofApp::setup()
         Particle p = Particle();
         p.position = ofVec2f(ofRandom(0, ofGetWidth()), ofRandom(0, ofGetHeight()));
         p.direction = ofRandom(TWO_PI);
-//        p.color = ofVec3f(ofRandom(1), 0, ofRandom(1));
-        ofColor c = ofColor::fromHsb(192 + ofRandom(64), 255, 255);
+        ofColor c = ofColor::fromHsb(ofRandom(255), 255, 255);
         p.color = ofVec3f(c.r / 255.0, c.g / 255.0, c.b / 255.0);
         particles.push_back(p);
     }
@@ -96,6 +95,17 @@ void ofApp::updateSim()
         if( p.position.x < 0 || p.position.x >= ofGetWidth() || p.position.y < 0 || p.position.y >= ofGetHeight() ) {
             p.position = ofVec2f(ofRandom(0, ofGetWidth()), ofRandom(0, ofGetHeight()));
         }
+        
+        // get color from grid
+        ofVec3f grid_value = grid[p.position.x * gridMult][p.position.y * gridMult];
+        ofColor grid_color = ofColor(ofFloatColor(grid_value.x, grid_value.y, grid_value.z));
+        ofColor p_color = ofColor(ofFloatColor(p.color.x, p.color.y, p.color.z));
+        float grid_hue = grid_color.getHue();
+        float p_hue = p_color.getHue();
+        float hue = ofLerp(p_hue, grid_hue, .1);
+        p_color.setHue(hue);
+        p.color = ofVec3f(p_color.r / 255.0, p_color.g / 255.0, p_color.b / 255.0);
+        
         particles[i] = p;
     }
 
@@ -145,6 +155,11 @@ void ofApp::draw()
     ofClear(0, 0, 0);
     ofFill();
     
+//    ofColor c = ofColor::fromHsb(ofRandom(255), 255, 255);
+//    ofSetColor(c);
+//    ofDrawRectangle(10, 10, 100, 100);
+//    return;
+    
     for(int i = 0; i < GRID_SIZE; i++)
     {
         for(int j = 0; j < GRID_SIZE; j++)
@@ -163,7 +178,7 @@ void ofApp::draw()
             if( showParticles )
             {
                 ofSetColor(ofFloatColor(p.color.x, p.color.y, p.color.z));
-                ofDrawRectangle(p.position.x, p.position.y, 1, 1);
+                ofDrawRectangle(p.position.x - 1, p.position.y - 1, 3, 3);
             }
             
             if( showSensors )
