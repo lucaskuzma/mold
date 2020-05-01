@@ -33,10 +33,6 @@ void ofApp::setup()
     for(int i = 0; i < N_PARTICLES; i++)
     {
         Particle p = Particle();
-        p.position = ofVec2f(ofRandom(0, ofGetWidth()), ofRandom(0, ofGetHeight()));
-        p.direction = ofRandom(TWO_PI);
-        ofColor c = ofColor::fromHsb(ofRandom(255), 255, 255);
-        p.color = ofVec3f(c.r / 255.0, c.g / 255.0, c.b / 255.0);
         particles.push_back(p);
     }
     
@@ -93,7 +89,8 @@ void ofApp::updateSim()
         
         // respawn if off edge
         if( p.position.x < 0 || p.position.x >= ofGetWidth() || p.position.y < 0 || p.position.y >= ofGetHeight() ) {
-            p.position = ofVec2f(ofRandom(0, ofGetWidth()), ofRandom(0, ofGetHeight()));
+            //p.position = ofVec2f(ofRandom(0, ofGetWidth()), ofRandom(0, ofGetHeight()));
+            p.setup();
         }
         
         // get color from grid
