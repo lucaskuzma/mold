@@ -7,6 +7,10 @@
 #define STEP_ANGLE      0.20
 #define ATTENUATION     0.993
 
+#define SAVE_MESH_FRAMES 512
+#define SAVE_MESH_THRESH 2.8
+
+#pragma mark - setup
 //--------------------------------------------------------------
 void ofApp::setup()
 {
@@ -41,6 +45,7 @@ void ofApp::setup()
     gridDiv = float(ofGetWidth()) / GRID_SIZE;
 }
 
+#pragma mark - update
 //--------------------------------------------------------------
 void ofApp::update()
 {
@@ -51,6 +56,7 @@ void ofApp::update()
     }
 }
 
+#pragma mark - updateSim
 //--------------------------------------------------------------
 void ofApp::updateSim()
 {
@@ -89,7 +95,6 @@ void ofApp::updateSim()
         
         // respawn if off edge
         if( p.position.x < 0 || p.position.x >= ofGetWidth() || p.position.y < 0 || p.position.y >= ofGetHeight() ) {
-            //p.position = ofVec2f(ofRandom(0, ofGetWidth()), ofRandom(0, ofGetHeight()));
             p.setup();
         }
         
@@ -135,17 +140,31 @@ void ofApp::updateSim()
         }
     }
     
+    int frame = ofGetFrameNum();
+    if (SAVE_MESH_FRAMES > frame)
+    {
+        ofLogNotice() << "writing frame " << frame;
+    } else if (SAVE_MESH_FRAMES == frame) {
+        outputMesh.save("mesh.ply");
+        ofLogNotice() << "saved mesh file";
+    }
+
     // attenuate grid
     for(int i = 0; i < GRID_SIZE; i++)
     {
         for(int j = 0; j < GRID_SIZE; j++)
         {
+            if (SAVE_MESH_FRAMES > frame and (grid[i][j].x + grid[i][j].y + grid[i][j].z) > SAVE_MESH_THRESH)
+            {
+                outputMesh.addVertex(ofVec3f(i * gridDiv, j * gridDiv, frame));
+            }
             // copy from temp and attenuate in one step
             grid[i][j] = temp[i][j] * ATTENUATION;
         }
     }
 }
 
+#pragma mark - draw
 //--------------------------------------------------------------
 void ofApp::draw()
 {
@@ -188,6 +207,7 @@ void ofApp::draw()
     }
 }
 
+#pragma mark - keyPressed
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key)
 {

@@ -3,7 +3,7 @@
 #include "ofMain.h"
 
 #define GRID_SIZE 320
-#define N_PARTICLES 128
+#define N_PARTICLES 512
 
 class Particle
 {
@@ -20,13 +20,13 @@ public:
 
     void setup()
     {
-        //        position = ofVec2f(ofRandom(0, ofGetWidth()), ofRandom(0, ofGetHeight()));
-        position = ofVec2f(ofGetWidth() / 2, ofGetHeight() / 2);
+        position = ofVec2f(ofRandom(0, ofGetWidth()), ofRandom(0, ofGetHeight()));
+//        position = ofVec2f(ofGetWidth() / 2, ofGetHeight() / 2);
         direction = ofRandom(TWO_PI);
-        float r = 30;
-        position += ofVec2f(r * cos(direction), r * sin(direction));
+//        float r = 30;
+//        position += ofVec2f(r * cos(direction), r * sin(direction));
         
-        ofColor c = ofColor::fromHsb(ofRandom(255), 255, 255);
+        ofColor c = ofColor::fromHsb(ofRandom(64), 255, 255);
         color = ofVec3f(c.r / 255.0, c.g / 255.0, c.b / 255.0);
     }
 };
@@ -46,6 +46,8 @@ class ofApp : public ofBaseApp{
     bool runSim;
     bool showSensors;
     bool showParticles;
+    
+    ofMesh outputMesh;
     
 public:
     void setup();
