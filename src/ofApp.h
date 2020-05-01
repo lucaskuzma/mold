@@ -3,7 +3,7 @@
 #include "ofMain.h"
 
 #define GRID_SIZE 320
-#define N_PARTICLES 512
+#define N_PARTICLES 256
 
 class Particle
 {

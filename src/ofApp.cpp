@@ -7,7 +7,7 @@
 #define STEP_ANGLE      0.20
 #define ATTENUATION     0.993
 
-#define SAVE_MESH_FRAMES 512
+#define SAVE_MESH_FRAMES 256
 #define SAVE_MESH_THRESH 2.8
 
 #pragma mark - setup
@@ -20,6 +20,8 @@ void ofApp::setup()
     runSim = true;
     showSensors = true;
     showParticles = true;
+    
+    outputMesh.setMode(OF_PRIMITIVE_POINTS);
     
 //    ofEnableDepthTest();
 //    glEnable(GL_POINT_SMOOTH);
@@ -60,6 +62,15 @@ void ofApp::update()
 //--------------------------------------------------------------
 void ofApp::updateSim()
 {
+    int frame = ofGetFrameNum();
+    if (SAVE_MESH_FRAMES > frame)
+    {
+        ofLogNotice() << "writing frame " << frame;
+    } else if (SAVE_MESH_FRAMES == frame) {
+        outputMesh.save("mesh.ply");
+        ofLogNotice() << "saved mesh file";
+    }
+    
     // particles sense direction and move 1 step forward
     for(int i = 0; i < N_PARTICLES; i++)
     {
@@ -109,12 +120,15 @@ void ofApp::updateSim()
         p.color = ofVec3f(p_color.r / 255.0, p_color.g / 255.0, p_color.b / 255.0);
         
         particles[i] = p;
-    }
+        
+        // consider saving
+        if(SAVE_MESH_FRAMES > frame)
+        {
+            outputMesh.addVertex(ofVec3f(p.position.x, p.position.y, frame * gridDiv));
+            outputMesh.addColor(p_color);
+        }
 
-    // count particles in each cell
-    for(int i = 0; i < N_PARTICLES; i++)
-    {
-        Particle p = particles[i];
+        // count particles in each cell
         grid[ofClamp(p.position.x * gridMult, 0, GRID_SIZE - 1)][ofClamp(p.position.y * gridMult, 0, GRID_SIZE - 1)] += p.color;
     }
     
@@ -139,25 +153,12 @@ void ofApp::updateSim()
             temp[i][j] = .125 * (tl + to + tr + ri + br + bo + bl + le);
         }
     }
-    
-    int frame = ofGetFrameNum();
-    if (SAVE_MESH_FRAMES > frame)
-    {
-        ofLogNotice() << "writing frame " << frame;
-    } else if (SAVE_MESH_FRAMES == frame) {
-        outputMesh.save("mesh.ply");
-        ofLogNotice() << "saved mesh file";
-    }
 
     // attenuate grid
     for(int i = 0; i < GRID_SIZE; i++)
     {
         for(int j = 0; j < GRID_SIZE; j++)
         {
-            if (SAVE_MESH_FRAMES > frame and (grid[i][j].x + grid[i][j].y + grid[i][j].z) > SAVE_MESH_THRESH)
-            {
-                outputMesh.addVertex(ofVec3f(i * gridDiv, j * gridDiv, frame));
-            }
             // copy from temp and attenuate in one step
             grid[i][j] = temp[i][j] * ATTENUATION;
         }
