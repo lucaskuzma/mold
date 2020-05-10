@@ -3,7 +3,7 @@
 #include "ofMain.h"
 
 #define GRID_SIZE 320
-#define N_PARTICLES 256
+#define N_PARTICLES 512
 
 class Particle
 {
@@ -37,6 +37,7 @@ class ofApp : public ofBaseApp{
     
     array<array<ofVec3f, GRID_SIZE>, GRID_SIZE> grid;
     array<array<ofVec3f, GRID_SIZE>, GRID_SIZE> temp;
+    array<array<float, GRID_SIZE>, GRID_SIZE> dead;
     
     float gridMult;
     float gridDiv;
@@ -54,6 +55,8 @@ public:
     void update();
     void updateSim();
     void draw();
+    
+    float toGrid(float x);
     
     void keyPressed(int key);
     void keyReleased(int key);

@@ -7,8 +7,7 @@
 #define STEP_ANGLE      0.20
 #define ATTENUATION     0.993
 
-#define SAVE_MESH_FRAMES 256
-#define SAVE_MESH_THRESH 2.8
+#define SAVE_MESH_FRAMES 0
 
 #pragma mark - setup
 //--------------------------------------------------------------
@@ -33,8 +32,11 @@ void ofApp::setup()
         {
             grid[i][j] = ofVec3f(0, 0, 0);
             temp[i][j] = ofVec3f(0, 0, 0);
+            dead[i][j] = 0;
         }
     }
+    
+    dead[GRID_SIZE/2][GRID_SIZE/2] = 1;
     
     for(int i = 0; i < N_PARTICLES; i++)
     {
@@ -88,8 +90,8 @@ void ofApp::updateSim()
         p.sensor_l = p.position + ofVec2f(l_sensor_x, l_sensor_y);
         
         // get grid values at sensor position
-        ofVec3f r_grid_value = grid[p.sensor_r.x * gridMult][p.sensor_r.y * gridMult];
-        ofVec3f l_grid_value = grid[p.sensor_l.x * gridMult][p.sensor_l.y * gridMult];
+        ofVec3f r_grid_value = grid[toGrid(p.sensor_r.x)][toGrid(p.sensor_r.y)];
+        ofVec3f l_grid_value = grid[toGrid(p.sensor_l.x)][toGrid(p.sensor_l.y)];
         
         // rotate away from higher value
         if(l_grid_value.lengthSquared() < r_grid_value.lengthSquared())
@@ -110,7 +112,7 @@ void ofApp::updateSim()
         }
         
         // get color from grid
-        ofVec3f grid_value = grid[p.position.x * gridMult][p.position.y * gridMult];
+        ofVec3f grid_value = grid[toGrid(p.position.x)][toGrid(p.position.y)];
         ofColor grid_color = ofColor(ofFloatColor(grid_value.x, grid_value.y, grid_value.z));
         ofColor p_color = ofColor(ofFloatColor(p.color.x, p.color.y, p.color.z));
         float grid_hue = grid_color.getHue();
@@ -118,8 +120,6 @@ void ofApp::updateSim()
         float hue = ofLerp(p_hue, grid_hue, .1);
         p_color.setHue(hue);
         p.color = ofVec3f(p_color.r / 255.0, p_color.g / 255.0, p_color.b / 255.0);
-        
-        particles[i] = p;
         
         // consider saving
         if(SAVE_MESH_FRAMES > frame)
@@ -129,7 +129,21 @@ void ofApp::updateSim()
         }
 
         // count particles in each cell
-        grid[ofClamp(p.position.x * gridMult, 0, GRID_SIZE - 1)][ofClamp(p.position.y * gridMult, 0, GRID_SIZE - 1)] += p.color;
+        grid[toGrid(p.position.x)][toGrid(p.position.y)] += p.color;
+        
+        // get dead values at sensor position
+        float r_dead_value = dead[toGrid(p.sensor_r.x)][toGrid(p.sensor_r.y)];
+        float l_dead_value = dead[toGrid(p.sensor_l.x)][toGrid(p.sensor_l.y)];
+        
+        if (r_dead_value > 0 || l_dead_value > 0)
+        {
+            dead[toGrid(p.position.x)][toGrid(p.position.y)] = 1;
+            // respawn
+            p.setup();
+        }
+        
+        // copy back to array
+        particles[i] = p;
     }
     
     // blur grid
@@ -165,6 +179,13 @@ void ofApp::updateSim()
     }
 }
 
+#pragma mark - util
+//--------------------------------------------------------------
+float ofApp::toGrid(float x)
+{
+    return ofClamp(x * gridMult, 0, GRID_SIZE - 1);
+}
+
 #pragma mark - draw
 //--------------------------------------------------------------
 void ofApp::draw()
@@ -183,6 +204,12 @@ void ofApp::draw()
         {
             ofSetColor(ofFloatColor(grid[i][j].x, grid[i][j].y, grid[i][j].z));
             ofDrawRectangle(i * gridDiv, j * gridDiv, gridDiv, gridDiv);
+            
+            if( dead[i][j] > 0 )
+            {
+                ofSetColor(ofFloatColor(dead[i][j]));
+                ofDrawRectangle(i * gridDiv, j * gridDiv, gridDiv, gridDiv);
+            }
         }
     }
     
