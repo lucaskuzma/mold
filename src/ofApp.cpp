@@ -5,7 +5,7 @@
 #define SENSOR_ANGLE    .4 //0.785398
 #define STEP_DISTANCE   4
 #define STEP_ANGLE      0.20
-#define ATTENUATION     0.993
+#define ATTENUATION     0.98
 
 #define SAVE_MESH_FRAMES 0
 
@@ -93,8 +93,8 @@ void ofApp::updateSim()
         ofVec3f r_grid_value = grid[toGrid(p.sensor_r.x)][toGrid(p.sensor_r.y)];
         ofVec3f l_grid_value = grid[toGrid(p.sensor_l.x)][toGrid(p.sensor_l.y)];
         
-        // rotate away from higher value
-        if(l_grid_value.lengthSquared() < r_grid_value.lengthSquared())
+        // rotate toward from higher value
+        if(l_grid_value.lengthSquared() > r_grid_value.lengthSquared())
         {
             p.direction -= STEP_ANGLE;
         } else {
@@ -131,14 +131,22 @@ void ofApp::updateSim()
         // count particles in each cell
         grid[toGrid(p.position.x)][toGrid(p.position.y)] += p.color;
         
-        // get dead values at sensor position
-        float r_dead_value = dead[toGrid(p.sensor_r.x)][toGrid(p.sensor_r.y)];
-        float l_dead_value = dead[toGrid(p.sensor_l.x)][toGrid(p.sensor_l.y)];
+//        // get dead values at sensor position
+//        float r_dead_value = dead[toGrid(p.sensor_r.x)][toGrid(p.sensor_r.y)];
+//        float l_dead_value = dead[toGrid(p.sensor_l.x)][toGrid(p.sensor_l.y)];
+//
+//        if (r_dead_value > 0 || l_dead_value > 0)
+//        {
+//            dead[toGrid(p.position.x)][toGrid(p.position.y)] = 1;
+//
+//            // die, i.e. respawn
+//            p.setup();
+//        }
         
-        if (r_dead_value > 0 || l_dead_value > 0)
+        // death and dying
+        p.lifetime -= 1;
+        if( p.lifetime <= 0 )
         {
-            dead[toGrid(p.position.x)][toGrid(p.position.y)] = 1;
-            
             // die, i.e. respawn
             p.setup();
         }
@@ -206,11 +214,11 @@ void ofApp::draw()
             ofSetColor(ofFloatColor(grid[i][j].x, grid[i][j].y, grid[i][j].z));
             ofDrawRectangle(i * gridDiv, j * gridDiv, gridDiv, gridDiv);
             
-            if( dead[i][j] > 0 )
-            {
-                ofSetColor(ofFloatColor(dead[i][j]));
-                ofDrawRectangle(i * gridDiv, j * gridDiv, gridDiv, gridDiv);
-            }
+//            if( dead[i][j] > 0 )
+//            {
+//                ofSetColor(ofFloatColor(dead[i][j]));
+//                ofDrawRectangle(i * gridDiv, j * gridDiv, gridDiv, gridDiv);
+//            }
         }
     }
     
