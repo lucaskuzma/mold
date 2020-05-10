@@ -20,11 +20,16 @@ public:
 
     void setup()
     {
-        position = ofVec2f(ofRandom(0, ofGetWidth()), ofRandom(0, ofGetHeight()));
+//        position = ofVec2f(ofRandom(0, ofGetWidth()), ofRandom(0, ofGetHeight()));
 //        position = ofVec2f(ofGetWidth() / 2, ofGetHeight() / 2);
+
         direction = ofRandom(TWO_PI);
-//        float r = 30;
-//        position += ofVec2f(r * cos(direction), r * sin(direction));
+        
+        // cirlce spawn
+        float r = ofGetWidth()/2 - 10;
+        float antiDirection = direction + PI;
+        ofVec2f center = ofVec2f(ofGetWidth()/2, ofGetHeight()/2);
+        position = center + ofVec2f(r * cos(antiDirection), r * sin(antiDirection));
         
         ofColor c = ofColor::fromHsb(ofRandom(64), 255, 255);
         color = ofVec3f(c.r / 255.0, c.g / 255.0, c.b / 255.0);

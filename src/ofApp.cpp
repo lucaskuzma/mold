@@ -138,10 +138,11 @@ void ofApp::updateSim()
         if (r_dead_value > 0 || l_dead_value > 0)
         {
             dead[toGrid(p.position.x)][toGrid(p.position.y)] = 1;
-            // respawn
+            
+            // die, i.e. respawn
             p.setup();
         }
-        
+
         // copy back to array
         particles[i] = p;
     }
