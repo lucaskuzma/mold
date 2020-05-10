@@ -2,9 +2,9 @@
 
 #include "ofMain.h"
 
-#define GRID_SIZE   320
-#define N_PARTICLES 1024
-#define LIFETIME    300
+#define GRID_SIZE   1280
+#define N_PARTICLES 4096
+#define LIFETIME    100
 
 class Particle
 {

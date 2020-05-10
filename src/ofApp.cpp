@@ -1,13 +1,14 @@
 #include "ofApp.h"
 
 #define SIM_SPEED 1      // how many sim steps per frame
-#define SENSOR_DISTANCE 16
+#define SENSOR_DISTANCE 14
 #define SENSOR_ANGLE    .4 //0.785398
 #define STEP_DISTANCE   4
 #define STEP_ANGLE      0.20
-#define ATTENUATION     0.98
+#define ATTENUATION     0.97
 
 #define SAVE_MESH_FRAMES 0
+#define SAVE_IMAGE_EVERY 10
 
 #pragma mark - setup
 //--------------------------------------------------------------
@@ -17,8 +18,8 @@ void ofApp::setup()
     ofBackground(0, 0, 0);
     
     runSim = true;
-    showSensors = true;
-    showParticles = true;
+    showSensors = false;
+    showParticles = false;
     
     outputMesh.setMode(OF_PRIMITIVE_POINTS);
     
@@ -242,6 +243,15 @@ void ofApp::draw()
             }
         }
     }
+    
+//    int frame = ofGetFrameNum();
+//    if( frame % SAVE_IMAGE_EVERY == 0 )
+//    {
+//        string zeroes = "0000";
+//        zeroes = zeroes.substr(0, zeroes.length()-(ofToString(frame).length()));
+//        string fileName = "./frames/e/" + zeroes + ofToString(frame) + ".png";
+//        ofSaveScreen(fileName);
+//    }
 }
 
 #pragma mark - keyPressed
